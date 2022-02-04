@@ -1,0 +1,37 @@
+processor_xyz:
+  ros__parameters:
+    # TODO(shrijitsingh99): allow changing point type from yaml instead of swapping executable
+    # point_type: "pcl::PointXYZ"
+    use_sim_time: true
+    processor_plugins:
+      [
+        "crop_box",
+        "voxel_grid",
+        "radius_outlier_removal",
+        "euclidean_cluster_extraction",
+      ]
+
+    crop_box:
+      plugin: "pcl_processor::CropBox"
+      min: [-5.0, -5.0, -5.0]
+      max: [5.0, 5.0, 5.0]
+      negative: false
+
+    voxel_grid:
+      plugin: "pcl_processor::VoxelGrid"
+      leaf_size: [0.1, 0.1, 0.1]
+      downsample_all_data: true
+      min_points_per_voxel: 0
+      save_leaf_layout: false
+
+    radius_outlier_removal:
+      plugin: "pcl_processor::RadiusOutlierRemoval"
+      radius_search: 0.25
+      min_points_per_voxel: 5
+
+    euclidean_cluster_extraction:
+      plugin: "pcl_processor::EuclideanClusterExtraction"
+      cluster_tolerance: 0.25
+      min_cluster_size: 10
+      max_cluster_size: 150
+      publish_markers: true

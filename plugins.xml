@@ -1,0 +1,19 @@
+<library path="pcl_processor_plugins">
+    <!-- Filters -->
+    <class type="pcl_processor::CropBox<pcl::PointXYZ>" base_class_type="pcl_processor::PointCloudProcessor<pcl::PointXYZ>">
+        <description>This is a crop box plugin.</description>
+    </class>
+
+    <class type="pcl_processor::VoxelGrid<pcl::PointXYZ>" base_class_type="pcl_processor::PointCloudProcessor<pcl::PointXYZ>">
+        <description>This is a voxel grid plugin.</description>
+    </class>
+
+    <class type="pcl_processor::RadiusOutlierRemoval<pcl::PointXYZ>" base_class_type="pcl_processor::PointCloudProcessor<pcl::PointXYZ>">
+        <description>This is a radius outlier removal plugin.</description>
+    </class>
+
+    <!-- Segmentation -->
+    <class type="pcl_processor::EuclideanClusterExtraction<pcl::PointXYZ>" base_class_type="pcl_processor::PointCloudProcessor<pcl::PointXYZ>">
+        <description>This is a euclidean cluster extraction plugin.</description>
+    </class>
+</library>
