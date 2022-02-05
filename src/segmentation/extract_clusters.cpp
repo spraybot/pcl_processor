@@ -66,9 +66,9 @@ EuclideanClusterExtraction<PointT>::set_parameters(
     if (parameter_name == plugin_name_ + ".cluster_tolerance") {
       processor_.setClusterTolerance(parameter.as_double());
     } else if (parameter_name == plugin_name_ + ".min_cluster_size") {
-      processor_.setMinClusterSize(std::min(0u, static_cast<pcl::uindex_t>(parameter.as_int())));
+      processor_.setMinClusterSize(static_cast<pcl::uindex_t>(std::max(0l, parameter.as_int())));
     } else if (parameter_name == plugin_name_ + ".max_cluster_size") {
-      processor_.setMaxClusterSize(std::max(0u, static_cast<pcl::uindex_t>(parameter.as_int())));
+      processor_.setMaxClusterSize(static_cast<pcl::uindex_t>(std::max(0l, parameter.as_int())));
     } else if (parameter_name == plugin_name_ + ".publish_markers") {
       publish_markers_ = parameter.as_bool();
     }

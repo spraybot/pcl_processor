@@ -51,7 +51,7 @@ RadiusOutlierRemoval<PointT>::set_parameters(const std::vector<rclcpp::Parameter
       processor_.setRadiusSearch(parameter.as_double());
     } else if (parameter_name == plugin_name_ + ".min_neighbors_in_radius") {
       processor_.setMinNeighborsInRadius(
-        std::min(0u, static_cast<unsigned>(parameter.as_int())));
+        static_cast<unsigned>(std::max(0l, parameter.as_int())));
     }
   }
   return result;
