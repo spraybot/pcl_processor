@@ -56,7 +56,8 @@ add_library(pcl_processor_plugins SHARED
   src/filters/crop_box.cpp
   src/filters/radius_outlier_removal.cpp
   # Segmentation
-  src/segmentation/extract_clusters.cpp)
+  src/segmentation/extract_clusters.cpp
+  src/segmentation/ground_plane_fitting.cpp)
 
 target_include_directories(pcl_processor_plugins PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

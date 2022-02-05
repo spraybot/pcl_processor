@@ -16,4 +16,8 @@
     <class type="pcl_processor::EuclideanClusterExtraction<pcl::PointXYZ>" base_class_type="pcl_processor::PointCloudProcessor<pcl::PointXYZ>">
         <description>This is a euclidean cluster extraction plugin.</description>
     </class>
+
+    <class type="pcl_processor::GroundPlaneFitting<pcl::PointXYZ>" base_class_type="pcl_processor::PointCloudProcessor<pcl::PointXYZ>">
+        <description>This is a ground plane fitting plugin.</description>
+    </class>
 </library>

@@ -3,18 +3,18 @@ processor_xyz:
     # TODO(shrijitsingh99): allow changing point type from yaml instead of swapping executable
     # point_type: "pcl::PointXYZ"
     use_sim_time: true
-    processor_plugins:
-      [
+    processor_plugins: [
         "crop_box",
         "voxel_grid",
         "radius_outlier_removal",
-        "euclidean_cluster_extraction",
+        # "euclidean_cluster_extraction",
+        "ground_plane_fitting",
       ]
 
     crop_box:
       plugin: "pcl_processor::CropBox"
-      min: [-5.0, -5.0, -5.0]
-      max: [5.0, 5.0, 5.0]
+      min: [-10.0, -10.0, -10.0]
+      max: [10.0, 10.0, 10.0]
       negative: false
 
     voxel_grid:
@@ -35,3 +35,11 @@ processor_xyz:
       min_cluster_size: 10
       max_cluster_size: 150
       publish_markers: true
+
+    ground_plane_fitting:
+      plugin: "pcl_processor::GroundPlaneFitting"
+      num_iterations: 10
+      num_lpr: 20
+      initial_seeds_threshold: 1.0
+      plane_dist_threshold: 0.25
+      negative: true
