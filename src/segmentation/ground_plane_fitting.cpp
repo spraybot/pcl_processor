@@ -23,7 +23,9 @@ template<typename PointT>
 typename GroundPlaneFittingImpl<PointT>::PointCloudPtr GroundPlaneFittingImpl<PointT>::fit(
   PointCloudPtr input_cloud)
 {
-  pcl::PointCloud<PointT> input_cloud_original;
+  pcl::PointCloud<PointT> input_cloud_original, g_not_ground_pc;
+  g_not_ground_pc.header = input_cloud->header;
+  g_not_ground_pc.reserve(input_cloud->size());
   copyPointCloud(*input_cloud, input_cloud_original);
 
   // TODO(shrijitsingh99): Add segmenting of pointcloud and fitting multiple ground planes
@@ -43,7 +45,7 @@ typename GroundPlaneFittingImpl<PointT>::PointCloudPtr GroundPlaneFittingImpl<Po
   for (unsigned int i = 0; i < num_iterations; i++) {
     estimate_plane(*input_cloud);
     input_cloud->clear();
-    g_not_ground_pc->clear();
+    g_not_ground_pc.clear();
 
     // Convert pointcloud to matrix
     Eigen::MatrixXf points_matrix(input_cloud_original.points.size(), 3);
@@ -62,7 +64,7 @@ typename GroundPlaneFittingImpl<PointT>::PointCloudPtr GroundPlaneFittingImpl<Po
         // Ground plane points
         input_cloud->points.push_back(input_cloud_original[r]);
       } else {
-        g_not_ground_pc->points.push_back(input_cloud_original[r]);
+        g_not_ground_pc.points.push_back(input_cloud_original[r]);
       }
     }
 
@@ -70,10 +72,11 @@ typename GroundPlaneFittingImpl<PointT>::PointCloudPtr GroundPlaneFittingImpl<Po
       for (pcl::uindex_t r = 0; r < result.rows(); r++) {
         if (result[r] >= model_.dist_threshold) {
           // Non-Ground plane points
-          g_not_ground_pc->points.push_back(input_cloud_original[r]);
+          g_not_ground_pc.points.push_back(input_cloud_original[r]);
         }
       }
-      return g_not_ground_pc;
+      copyPointCloud(g_not_ground_pc, *input_cloud);
+      break;
     }
   }
 

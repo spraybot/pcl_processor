@@ -51,9 +51,7 @@ public:
   GroundPlaneFittingImpl()
   : num_iterations(1), num_lpr(1), initial_seeds_threshold(1.0), plane_dist_threshold(0.1),
     negative(false)
-  {
-    g_not_ground_pc = std::make_shared<PointCloud>();
-  }
+  {}
 
   PointCloudPtr fit(PointCloudPtr input_cloud);
 
@@ -68,7 +66,6 @@ private:
 
   void extract_initial_seeds(PointCloud & sorted_points);
 
-  PointCloudPtr g_not_ground_pc;
   ModelParameters model_;
 };
 }  // namespace impl
