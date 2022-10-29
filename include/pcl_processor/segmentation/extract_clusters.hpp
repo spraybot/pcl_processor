@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "pcl_processor/pointcloud_processor.hpp"
-#include "pcl_processor/point_types.hpp"
 
 #include <rclcpp/rclcpp.hpp>
 #include <visualization_msgs/msg/marker.hpp>
