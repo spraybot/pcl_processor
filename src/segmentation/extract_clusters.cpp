@@ -13,6 +13,7 @@
 
 #include "pcl_processor/segmentation/extract_clusters.hpp"
 
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <pcl/common/centroid.h>
 
 namespace pcl_processor
@@ -50,6 +51,7 @@ void EuclideanClusterExtraction<PointT>::declare_parameters(rclcpp::Node::Shared
     plugin_name_ + ".max_cluster_size",
     std::numeric_limits<pcl::uindex_t>::max());
   node->declare_parameter<bool>(plugin_name_ + ".publish_markers", false);
+  node->declare_parameter<std::string>(plugin_name_ + ".marker_frame", "base_link");
 }
 
 template<typename PointT>
@@ -71,6 +73,8 @@ EuclideanClusterExtraction<PointT>::set_parameters(
       processor_.setMaxClusterSize(static_cast<pcl::uindex_t>(std::max(0l, parameter.as_int())));
     } else if (parameter_name == plugin_name_ + ".publish_markers") {
       publish_markers_ = parameter.as_bool();
+    } else if (parameter_name == plugin_name_ + ".marker_frame") {
+      marker_frame_ = parameter.as_string();
     }
   }
   return result;
@@ -81,12 +85,28 @@ void EuclideanClusterExtraction<PointT>::publish_clusters(
   EuclideanClusterExtraction<PointT>::PointCloudConstPtr cloud_in,
   const std::vector<pcl::PointIndices> & cluster_indices) const
 {
-  // TODO(shrijitsingh99): Add publishing poitcloud messsages using Detection3DArray msg
+  // TODO(shrijitsingh99): Add publishing pointcloud messsages using Detection3DArray msg
   // https://github.com/ros-perception/vision_msgs/blob/kinetic-devel/msg/Detection3DArray.msg
   if (publish_markers_) {
+    geometry_msgs::msg::TransformStamped t;
+
+    auto node_ptr = node_.lock();
+
+    try {
+      t = tf_buffer_->lookupTransform(
+        marker_frame_, cloud_in->header.frame_id,
+        tf2::TimePointZero);
+    } catch (const tf2::TransformException & ex) {
+      RCLCPP_ERROR(
+        node_ptr->get_logger(), "Could not transform %s to %s: %s",
+        cloud_in->header.frame_id.c_str(), marker_frame_.c_str(),
+        ex.what());
+      return;
+    }
+
     visualization_msgs::msg::Marker marker_msg;
-    marker_msg.header.frame_id = cloud_in->header.frame_id;
-    marker_msg.header.stamp = node_.lock()->now();
+    marker_msg.header.frame_id = marker_frame_;
+    marker_msg.header.stamp = node_ptr->now();
     marker_msg.ns = plugin_name_ + "/clusters";
     marker_msg.type = visualization_msgs::msg::Marker::SPHERE_LIST;
     marker_msg.action = visualization_msgs::msg::Marker::ADD;
@@ -115,6 +135,7 @@ void EuclideanClusterExtraction<PointT>::publish_clusters(
       pt.x = centroid[0];
       pt.y = centroid[1];
       pt.z = centroid[2];
+      tf2::doTransform(pt, pt, t);
       marker_msg.points.push_back(pt);
       cloud_cluster.points.clear();
     }

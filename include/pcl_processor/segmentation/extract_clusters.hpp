@@ -12,13 +12,16 @@
 #include <vector>
 
 #include "pcl_processor/pointcloud_processor.hpp"
+#include "pcl_processor/point_types.hpp"
 
 #include <rclcpp/rclcpp.hpp>
 #include <visualization_msgs/msg/marker.hpp>
+#include <tf2/exceptions.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
 
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/search/kdtree.h>
-#include <pcl/point_types.h>
 
 namespace pcl_processor
 {
@@ -36,6 +39,11 @@ public:
     node_ = node;
     plugin_name_ = plugin_name;
     auto node_ptr = node.lock();
+
+    tf_buffer_ =
+      std::make_unique<tf2_ros::Buffer>(node_ptr->get_clock());
+    tf_listener_ =
+      std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
     cluster_marker_pub_ =
       node_ptr->create_publisher<visualization_msgs::msg::Marker>(
@@ -64,11 +72,14 @@ protected:
   std::string plugin_name_;
   rclcpp::Node::WeakPtr node_;
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_callback_;
+  std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+  std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   pcl::EuclideanClusterExtraction<PointT> processor_;
   typename pcl::search::KdTree<PointT>::Ptr kdtree_;
   std::vector<pcl::PointIndices> cluster_indices_;
 
   bool publish_markers_;
+  std::string marker_frame_;
   rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr cluster_marker_pub_;
 };
 }  // namespace pcl_processor
