@@ -17,6 +17,7 @@ find_package(pluginlib)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2_sensor_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
@@ -28,6 +29,7 @@ set(dependencies
   sensor_msgs
   tf2_ros
   tf2_geometry_msgs
+  tf2_sensor_msgs
   visualization_msgs
 )
 

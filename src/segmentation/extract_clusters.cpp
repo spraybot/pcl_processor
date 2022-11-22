@@ -14,7 +14,9 @@
 #include "pcl_processor/segmentation/extract_clusters.hpp"
 
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include "tf2_sensor_msgs/tf2_sensor_msgs.hpp"
 #include <pcl/common/centroid.h>
+#include "pcl_conversions/pcl_conversions.h"
 
 namespace pcl_processor
 {
@@ -93,9 +95,10 @@ void EuclideanClusterExtraction<PointT>::publish_clusters(
     auto node_ptr = node_.lock();
 
     try {
+      rclcpp::Time cloud_time = pcl_conversions::fromPCL(cloud_in->header.stamp);
       t = tf_buffer_->lookupTransform(
         marker_frame_, cloud_in->header.frame_id,
-        tf2::TimePointZero);
+        cloud_time);
     } catch (const tf2::TransformException & ex) {
       RCLCPP_ERROR(
         node_ptr->get_logger(), "Could not transform %s to %s: %s",
