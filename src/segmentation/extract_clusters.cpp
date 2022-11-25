@@ -93,9 +93,9 @@ void EuclideanClusterExtraction<PointT>::publish_clusters(
     geometry_msgs::msg::TransformStamped t;
 
     auto node_ptr = node_.lock();
+    rclcpp::Time cloud_time = pcl_conversions::fromPCL(cloud_in->header.stamp);
 
     try {
-      rclcpp::Time cloud_time = pcl_conversions::fromPCL(cloud_in->header.stamp);
       t = tf_buffer_->lookupTransform(
         marker_frame_, cloud_in->header.frame_id,
         cloud_time);
@@ -109,7 +109,7 @@ void EuclideanClusterExtraction<PointT>::publish_clusters(
 
     visualization_msgs::msg::Marker marker_msg;
     marker_msg.header.frame_id = marker_frame_;
-    marker_msg.header.stamp = node_ptr->now();
+    marker_msg.header.stamp = cloud_time;
     marker_msg.ns = plugin_name_ + "/clusters";
     marker_msg.type = visualization_msgs::msg::Marker::SPHERE_LIST;
     marker_msg.action = visualization_msgs::msg::Marker::ADD;

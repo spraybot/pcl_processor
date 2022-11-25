@@ -97,7 +97,9 @@ private:
     sensor_msgs::msg::PointCloud2 filter_msg{};
     pcl::toROSMsg(*input_cloud_, filter_msg);
     filter_msg.header.frame_id = msg->header.frame_id;
-    filter_msg.header.stamp = now();
+    // The filtered pointcloud timestamp is the same as the input pointcloud timestamp since it represents
+    // the same pointcloud but with some points filtered or processed
+    filter_msg.header.stamp = msg->header.stamp;
     processed_cloud_pub_->publish(filter_msg);
   }
 
