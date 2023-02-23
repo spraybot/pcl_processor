@@ -17,6 +17,8 @@
 #include <rclcpp/qos.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <pcl_conversions/pcl_conversions.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -43,6 +45,9 @@ public:
   : Node("pointcloud_pipeline"), point_type_(supported_point_types[&typeid(PointT)]),
     processor_loader_("pcl_processor", "pcl_processor::PointCloudProcessor<" + point_type_ + ">")
   {
+    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+
     // TODO(shrijitsingh99): Add pipeline name
     const auto input_topic = declare_parameter<std::string>("input_topic", "/points");
     const auto output_topic = declare_parameter<std::string>("output_topic", "~/filtered_points");
@@ -73,7 +78,8 @@ public:
           processor_plugin_name.c_str(), processor_type.c_str());
 
         processors_ordered_.push_back(processor_plugin_name);
-        processors_[processor_plugin_name]->initialize(node, processor_plugin_name);
+        processors_[processor_plugin_name]->setup(node, processor_plugin_name, tf_buffer_);
+        processors_[processor_plugin_name]->initialize();
       } catch (const pluginlib::PluginlibException & ex) {
         RCLCPP_FATAL(
           get_logger(), "Failed to create processor %s of type %s. Exception: %s",
@@ -108,6 +114,8 @@ private:
   std::unordered_map<std::string, typename PointCloudProcessor<PointT>::SharedPtr> processors_;
   std::vector<std::string> processors_ordered_;
 
+  std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+  std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_sub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr processed_cloud_pub_;
 };

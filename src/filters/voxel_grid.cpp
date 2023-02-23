@@ -33,10 +33,10 @@ void VoxelGrid<PointT>::declare_parameters(rclcpp::Node::SharedPtr & node)
       return set_parameters(std::forward<decltype(arg)>(arg));
     });
 
-  node->declare_parameter<std::vector<double>>(plugin_name_ + ".leaf_size", {0.1, 0.1, 0.1});
-  node->declare_parameter<bool>(plugin_name_ + ".downsample_all_data", true);
-  node->declare_parameter<int64_t>(plugin_name_ + ".min_points_per_voxel", 0);
-  node->declare_parameter<bool>(plugin_name_ + ".save_leaf_layout", false);
+  node->declare_parameter<std::vector<double>>(this->plugin_name_ + ".leaf_size", {0.1, 0.1, 0.1});
+  node->declare_parameter<bool>(this->plugin_name_ + ".downsample_all_data", true);
+  node->declare_parameter<int64_t>(this->plugin_name_ + ".min_points_per_voxel", 0);
+  node->declare_parameter<bool>(this->plugin_name_ + ".save_leaf_layout", false);
 }
 
 template<typename PointT>
@@ -49,15 +49,15 @@ VoxelGrid<PointT>::set_parameters(const std::vector<rclcpp::Parameter> & paramet
     // TODO(shrijitsingh99): Add try-catch for catching any parameter exceptions and set
     // parameter result to false
     const std::string & parameter_name = parameter.get_name();
-    if (parameter_name == plugin_name_ + ".leaf_size") {
+    if (parameter_name == this->plugin_name_ + ".leaf_size") {
       auto leaf_size = parameter.as_double_array();
       processor_.setLeafSize(leaf_size[0], leaf_size[1], leaf_size[2]);
-    } else if (parameter_name == plugin_name_ + ".downsample_all_data") {
+    } else if (parameter_name == this->plugin_name_ + ".downsample_all_data") {
       processor_.setDownsampleAllData(parameter.as_bool());
-    } else if (parameter_name == plugin_name_ + ".min_points_per_voxel") {
+    } else if (parameter_name == this->plugin_name_ + ".min_points_per_voxel") {
       processor_.setMinimumPointsNumberPerVoxel(
         static_cast<unsigned>(std::max(0l, parameter.as_int())));
-    } else if (parameter_name == plugin_name_ + ".save_leaf_layout") {
+    } else if (parameter_name == this->plugin_name_ + ".save_leaf_layout") {
       processor_.setSaveLeafLayout(parameter.as_bool());
     }
   }

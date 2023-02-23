@@ -46,14 +46,14 @@ void EuclideanClusterExtraction<PointT>::declare_parameters(rclcpp::Node::Shared
       return set_parameters(std::forward<decltype(arg)>(arg));
     });
 
-  node->declare_parameter<double>(plugin_name_ + ".cluster_tolerance", 0.0);
-  node->declare_parameter<int64_t>(plugin_name_ + ".min_cluster_size", 0);
+  node->declare_parameter<double>(this->plugin_name_ + ".cluster_tolerance", 0.0);
+  node->declare_parameter<int64_t>(this->plugin_name_ + ".min_cluster_size", 0);
   // TODO(shrijitsingh99): Look into max cluster size index limit (i.e. pcl::uindex_t limit)
   node->declare_parameter<int64_t>(
-    plugin_name_ + ".max_cluster_size",
+    this->plugin_name_ + ".max_cluster_size",
     std::numeric_limits<pcl::uindex_t>::max());
-  node->declare_parameter<bool>(plugin_name_ + ".publish_markers", false);
-  node->declare_parameter<std::string>(plugin_name_ + ".marker_frame", "base_link");
+  node->declare_parameter<bool>(this->plugin_name_ + ".publish_markers", false);
+  node->declare_parameter<std::string>(this->plugin_name_ + ".marker_frame", "base_link");
 }
 
 template<typename PointT>
@@ -67,15 +67,15 @@ EuclideanClusterExtraction<PointT>::set_parameters(
     // TODO(shrijitsingh99): Add try-catch for catching any parameter exceptions and set parameter
     // result to false
     const std::string & parameter_name = parameter.get_name();
-    if (parameter_name == plugin_name_ + ".cluster_tolerance") {
+    if (parameter_name == this->plugin_name_ + ".cluster_tolerance") {
       processor_.setClusterTolerance(parameter.as_double());
-    } else if (parameter_name == plugin_name_ + ".min_cluster_size") {
+    } else if (parameter_name == this->plugin_name_ + ".min_cluster_size") {
       processor_.setMinClusterSize(static_cast<pcl::uindex_t>(std::max(0l, parameter.as_int())));
-    } else if (parameter_name == plugin_name_ + ".max_cluster_size") {
+    } else if (parameter_name == this->plugin_name_ + ".max_cluster_size") {
       processor_.setMaxClusterSize(static_cast<pcl::uindex_t>(std::max(0l, parameter.as_int())));
-    } else if (parameter_name == plugin_name_ + ".publish_markers") {
+    } else if (parameter_name == this->plugin_name_ + ".publish_markers") {
       publish_markers_ = parameter.as_bool();
-    } else if (parameter_name == plugin_name_ + ".marker_frame") {
+    } else if (parameter_name == this->plugin_name_ + ".marker_frame") {
       marker_frame_ = parameter.as_string();
     }
   }
@@ -92,11 +92,11 @@ void EuclideanClusterExtraction<PointT>::publish_clusters(
   if (publish_markers_) {
     geometry_msgs::msg::TransformStamped t;
 
-    auto node_ptr = node_.lock();
+    auto node_ptr = this->node_.lock();
     rclcpp::Time cloud_time = pcl_conversions::fromPCL(cloud_in->header.stamp);
 
     try {
-      t = tf_buffer_->lookupTransform(
+      t = this->tf_buffer_->lookupTransform(
         marker_frame_, cloud_in->header.frame_id,
         cloud_time);
     } catch (const tf2::TransformException & ex) {
@@ -110,7 +110,7 @@ void EuclideanClusterExtraction<PointT>::publish_clusters(
     visualization_msgs::msg::Marker marker_msg;
     marker_msg.header.frame_id = marker_frame_;
     marker_msg.header.stamp = cloud_time;
-    marker_msg.ns = plugin_name_ + "/clusters";
+    marker_msg.ns = this->plugin_name_ + "/clusters";
     marker_msg.type = visualization_msgs::msg::Marker::SPHERE_LIST;
     marker_msg.action = visualization_msgs::msg::Marker::ADD;
     marker_msg.pose.orientation.w = 1.0;

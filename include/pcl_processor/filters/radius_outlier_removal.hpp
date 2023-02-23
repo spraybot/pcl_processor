@@ -28,12 +28,9 @@ protected:
   using PointCloudConstPtr = typename PointCloudProcessor<PointT>::PointCloudConstPtr;
 
 public:
-  void initialize(rclcpp::Node::WeakPtr node, const std::string & plugin_name) override
+  void initialize() override
   {
-    node_ = node;
-    plugin_name_ = plugin_name;
-    auto node_ptr = node.lock();
-
+    rclcpp::Node::SharedPtr node_ptr = this->node_.lock();
     declare_parameters(node_ptr);
   }
 
@@ -46,8 +43,6 @@ private:
     const std::vector<rclcpp::Parameter> & parameters);
 
 protected:
-  std::string plugin_name_;
-  rclcpp::Node::WeakPtr node_;
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_callback_;
   pcl::RadiusOutlierRemoval<PointT> processor_;
 };

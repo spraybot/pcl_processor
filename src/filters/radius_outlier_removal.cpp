@@ -33,8 +33,8 @@ void RadiusOutlierRemoval<PointT>::declare_parameters(rclcpp::Node::SharedPtr & 
       return set_parameters(std::forward<decltype(arg)>(arg));
     });
 
-  node->declare_parameter<double>(plugin_name_ + ".radius_search", 0.0);
-  node->declare_parameter<int64_t>(plugin_name_ + ".min_points_per_voxel", 1);
+  node->declare_parameter<double>(this->plugin_name_ + ".radius_search", 0.0);
+  node->declare_parameter<int64_t>(this->plugin_name_ + ".min_points_per_voxel", 1);
 }
 
 template<typename PointT>
@@ -47,9 +47,9 @@ RadiusOutlierRemoval<PointT>::set_parameters(const std::vector<rclcpp::Parameter
     // TODO(shrijitsingh99): Add try-catch for catching any parameter exceptions and set
     // parameter result to false
     const std::string & parameter_name = parameter.get_name();
-    if (parameter_name == plugin_name_ + ".radius_search") {
+    if (parameter_name == this->plugin_name_ + ".radius_search") {
       processor_.setRadiusSearch(parameter.as_double());
-    } else if (parameter_name == plugin_name_ + ".min_neighbors_in_radius") {
+    } else if (parameter_name == this->plugin_name_ + ".min_neighbors_in_radius") {
       processor_.setMinNeighborsInRadius(
         static_cast<unsigned>(std::max(0l, parameter.as_int())));
     }

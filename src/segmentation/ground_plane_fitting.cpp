@@ -147,11 +147,11 @@ void GroundPlaneFitting<PointT>::declare_parameters(rclcpp::Node::SharedPtr & no
       return set_parameters(std::forward<decltype(arg)>(arg));
     });
 
-  node->declare_parameter<int64_t>(plugin_name_ + ".num_iterations", 10);
-  node->declare_parameter<int64_t>(plugin_name_ + ".num_lpr", 20);
-  node->declare_parameter<double>(plugin_name_ + ".initial_seeds_threshold", 1.0);
-  node->declare_parameter<double>(plugin_name_ + ".plane_dist_threshold", 0.25);
-  node->declare_parameter<bool>(plugin_name_ + ".negative", false);
+  node->declare_parameter<int64_t>(this->plugin_name_ + ".num_iterations", 10);
+  node->declare_parameter<int64_t>(this->plugin_name_ + ".num_lpr", 20);
+  node->declare_parameter<double>(this->plugin_name_ + ".initial_seeds_threshold", 1.0);
+  node->declare_parameter<double>(this->plugin_name_ + ".plane_dist_threshold", 0.25);
+  node->declare_parameter<bool>(this->plugin_name_ + ".negative", false);
 }
 
 template<typename PointT>
@@ -164,15 +164,15 @@ GroundPlaneFitting<PointT>::set_parameters(const std::vector<rclcpp::Parameter> 
     // TODO(shrijitsingh99): Add try-catch for catching any parameter exceptions and set
     // parameter result to false
     const std::string & parameter_name = parameter.get_name();
-    if (parameter_name == plugin_name_ + ".num_iterations") {
+    if (parameter_name == this->plugin_name_ + ".num_iterations") {
       processor_.num_iterations = static_cast<unsigned>(std::max(0l, parameter.as_int()));
-    } else if (parameter_name == plugin_name_ + ".num_lpr") {
+    } else if (parameter_name == this->plugin_name_ + ".num_lpr") {
       processor_.num_lpr = static_cast<unsigned>(std::max(0l, parameter.as_int()));
-    } else if (parameter_name == plugin_name_ + ".initial_seeds_threshold") {
+    } else if (parameter_name == this->plugin_name_ + ".initial_seeds_threshold") {
       processor_.initial_seeds_threshold = parameter.as_double();
-    } else if (parameter_name == plugin_name_ + ".plane_dist_threshold") {
+    } else if (parameter_name == this->plugin_name_ + ".plane_dist_threshold") {
       processor_.plane_dist_threshold = parameter.as_double();
-    } else if (parameter_name == plugin_name_ + ".negative") {
+    } else if (parameter_name == this->plugin_name_ + ".negative") {
       processor_.negative = parameter.as_bool();
     }
   }
