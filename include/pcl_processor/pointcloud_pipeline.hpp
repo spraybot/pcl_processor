@@ -98,6 +98,14 @@ private:
     for (const auto & processor_name : processors_ordered_) {
       auto & processor = processors_[processor_name];
       input_cloud_ = processor->process(input_cloud_);
+
+      if (processor->processed_cloud_pub) {
+        sensor_msgs::msg::PointCloud2 filter_msg{};
+        pcl::toROSMsg(*input_cloud_, filter_msg);
+        filter_msg.header.frame_id = msg->header.frame_id;
+        filter_msg.header.stamp = msg->header.stamp;
+        processor->processed_cloud_pub->publish(filter_msg);
+      }
     }
 
     sensor_msgs::msg::PointCloud2 filter_msg{};

@@ -51,7 +51,7 @@ public:
         publish_topic = std::string(node_ptr->get_fully_qualified_name()) + "/" + plugin_name_ + "/cloud";
       }
 
-      processed_cloud_pub_ = node_ptr->create_publisher<sensor_msgs::msg::PointCloud2>(
+      processed_cloud_pub = node_ptr->create_publisher<sensor_msgs::msg::PointCloud2>(
         publish_topic, rclcpp::SensorDataQoS());
     }
   }
@@ -63,6 +63,9 @@ protected:
   rclcpp::Node::WeakPtr node_;
   std::string plugin_name_;
   std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr processed_cloud_pub_;
+
+public:
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr processed_cloud_pub;
+
 };
 }  // namespace pcl_processor
